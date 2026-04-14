@@ -1,0 +1,16 @@
+# 原始素材/开发调试文件
+_raw/
+*问题反馈/
+*.png
+!assets/**/*.png
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.claude/
+
+# 启动脚本（本地用）
+启动.bat
+启动.command

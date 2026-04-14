@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小王子星球 · 移民招募</title>
+
+  <!-- Fonts (本地化) -->
+  <link rel="stylesheet" href="css/fonts.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/screens.css">
+  <link rel="stylesheet" href="css/animations.css">
+
+  <!-- Libraries (本地化) -->
+  <script src="lib/anime.min.js"></script>
+  <script src="lib/howler.min.js"></script>
+  <script src="lib/wavesurfer.min.js"></script>
+  <script src="lib/tsparticles.engine.min.js"></script>
+  <script src="lib/tsparticles.bundle.min.js"></script>
+  <script src="lib/typed.umd.js"></script>
+</head>
+<body>
+
+  <!-- ============================================================
+       全局背景 & 公共元素
+       ============================================================ -->
+
+  <!-- 粒子背景（保留兼容） -->
+  <div id="particles-bg"></div>
+
+  <!-- CSS 星空 -->
+  <div class="stars" id="stars"></div>
+
+  <!-- 流星 -->
+  <div class="shooting-star" style="top:10%;left:5%;--angle:-25deg;--dur:6s;--delay:0.5s;--len:140px;"></div>
+  <div class="shooting-star" style="top:25%;left:55%;--angle:-18deg;--dur:8s;--delay:3s;--len:180px;"></div>
+  <div class="shooting-star" style="top:45%;left:20%;--angle:-32deg;--dur:7s;--delay:5.5s;--len:120px;"></div>
+  <div class="shooting-star" style="top:18%;left:75%;--angle:-22deg;--dur:9s;--delay:2s;--len:160px;"></div>
+  <div class="shooting-star" style="top:55%;left:40%;--angle:-28deg;--dur:10s;--delay:7s;--len:100px;"></div>
+
+  <!-- BGM -->
+  <!-- BGM 已禁用 -->
+
+  <!-- 音效开关 -->
+  <button id="audio-toggle" class="audio-btn" title="音效开关">
+    <span class="audio-on">🔊</span>
+    <span class="audio-off" style="display:none;">🔇</span>
+  </button>
+
+
+  <!-- 开始体验覆盖层（解锁音频） -->
+  <div class="start-overlay" id="start-overlay">
+    <div class="start-content">
+      <div class="start-hint">点击任意位置，开始你的星际旅程</div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       环节一 · 创建星球
+       - 命名星球、选颜色（蓝/粉）、选装饰（云朵/星环/小行星）
+       - JS: planet-diy.js
+       ============================================================ -->
+  <section id="screen-1" class="screen active">
+    <div class="screen-content screen-1-content">
+      <h1 class="title-glow">创建你的星球</h1>
+      <p class="subtitle">在浩瀚宇宙中，建立属于你自己的小星球</p>
+
+      <div class="planet-stage">
+        <div class="planet-container">
+          <img id="planet-img" src="assets/images/planet/planet-base.png" alt="星球" class="planet-main">
+        </div>
+      </div>
+
+      <div class="diy-panel">
+        <div class="input-group">
+          <label>为你的星球命名</label>
+          <input type="text" id="planet-name-input" placeholder="输入星球名称..." maxlength="12">
+        </div>
+        <div class="color-picker">
+          <label>选择星球色调</label>
+          <div class="color-options">
+            <button class="color-btn" data-color="blue" style="background: #7eb5e6;"></button>
+            <button class="color-btn" data-color="pink" style="background: #f0a0b8;"></button>
+          </div>
+        </div>
+        <div class="decoration-picker">
+          <label>添加装饰</label>
+          <div class="deco-options">
+            <button class="deco-btn" data-deco="cloud">云朵</button>
+            <button class="deco-btn" data-deco="ring">星环</button>
+            <button class="deco-btn" data-deco="asteroid">小行星</button>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-create-planet" class="btn-primary btn-glow" disabled>
+        创建我的星球！
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       环节二 · 发布招募令
+       - 思考气泡过渡 → 卷轴广播 → 黑影"我要来面试" → 审核官提示
+       - 全自动推进，无需用户点击
+       - JS: recruitment.js
+       ============================================================ -->
+  <section id="screen-2" class="screen">
+    <div class="screen-content">
+      <!-- 学生的星球（居中大图） -->
+      <div class="s2-hero-planet" id="s2-hero-planet">
+        <div class="s2-signal-rings" id="s2-signal-rings"></div>
+        <span class="s2-hero-planet-name" id="s2-hero-planet-name"></span>
+        <img src="assets/images/planet/planet-base.png" alt="我的星球" class="s2-hero-planet-img" id="s2-hero-planet-img">
+      </div>
+
+      <!-- 串场旁白字幕 -->
+      <div class="narrator-subtitle" id="narrator-subtitle" style="display:none;">
+        <span class="narrator-subtitle-text" id="narrator-subtitle-text"></span>
+      </div>
+
+      <!-- 阶段B：卷轴广播 -->
+      <div class="scroll-container" id="scroll-container" style="display:none;">
+        <div class="scroll-decoration scroll-top"></div>
+        <div class="scroll-body" id="scroll-body">
+          <h2 class="scroll-title" id="scroll-title"></h2>
+          <div class="scroll-content" id="scroll-content"></div>
+        </div>
+        <div class="scroll-decoration scroll-bottom"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       环节三 · 移民面试
+       - 4角色同时登场，显示简历，学生点击选择1个 → 录音说理由
+       - 暖色调控制台背景图
+       - JS: review.js, characters.js
+       ============================================================ -->
+  <section id="screen-3" class="screen">
+    <!-- 候选人网格（JS 动态填充） -->
+    <div class="candidates-grid" id="candidates-grid"></div>
+
+    <!-- 选中后：角色居中 + 录音按钮 -->
+    <div class="s3-selected-phase" id="s3-selected-phase" style="display:none;">
+      <div class="s3-selected-card" id="s3-selected-card"></div>
+      <button class="s3-record-btn" id="s3-record-btn">
+        <span class="s3-rec-ripple"></span>
+        <span class="s3-rec-ripple"></span>
+        <!-- 麦克风图片（与环节四同款） -->
+        <img class="s3-mic-img" src="assets/images/ui/mic.png" alt="麦克风">
+        <!-- 录音中的波形动画 -->
+        <div class="s3-rec-waves">
+          <span class="s3-wave-bar"></span>
+          <span class="s3-wave-bar"></span>
+          <span class="s3-wave-bar"></span>
+          <span class="s3-wave-bar"></span>
+          <span class="s3-wave-bar"></span>
+        </div>
+      </button>
+      <span class="s3-record-hint" id="s3-record-hint">点击开始录音</span>
+    </div>
+
+    <!-- 助手飞行员对话框（底部） -->
+    <div class="assistant-bar" id="assistant-bar">
+      <div class="assistant-avatar">
+        <img src="assets/images/characters/pilot-avatar.png" alt="助手飞行员">
+      </div>
+      <div class="assistant-content">
+        <div class="assistant-message" id="assistant-message"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       环节四 · 深度表达（邀请身边的人）
+       - 三步：① 选人 → ② 星球相处说明书 → ③ 一句话总结
+       - JS: invite.js
+       ============================================================ -->
+  <section id="screen-4" class="screen">
+
+    <!-- 步骤指示器 -->
+    <div class="s4-step-indicator" id="s4-step-indicator">
+      <span class="step-dot active" data-step="1">1</span>
+      <span class="step-line"></span>
+      <span class="step-dot" data-step="2">2</span>
+      <span class="step-line"></span>
+      <span class="step-dot" data-step="3">3</span>
+    </div>
+
+    <!-- Step 1: 选人 -->
+    <div class="s4-step active" id="s4-step-1">
+      <div class="window-filmstrip">
+        <div class="filmstrip-track">
+          <div class="filmstrip-group">
+            <div class="filmstrip-item"><img src="assets/images/妈妈.jpg" alt="妈妈"></div>
+            <span class="filmstrip-label">妈妈</span>
+          </div>
+          <div class="filmstrip-group">
+            <div class="filmstrip-item"><img src="assets/images/爸爸.jpg" alt="爸爸"></div>
+            <span class="filmstrip-label">爸爸</span>
+          </div>
+          <div class="filmstrip-group">
+            <div class="filmstrip-item"><img src="assets/images/好朋友.jpg" alt="好朋友"></div>
+            <span class="filmstrip-label">好朋友</span>
+          </div>
+          <!-- 第二组（无缝循环） -->
+          <div class="filmstrip-group">
+            <div class="filmstrip-item"><img src="assets/images/妈妈.jpg" alt="妈妈"></div>
+            <span class="filmstrip-label">妈妈</span>
+          </div>
+          <div class="filmstrip-group">
+            <div class="filmstrip-item"><img src="assets/images/爸爸.jpg" alt="爸爸"></div>
+            <span class="filmstrip-label">爸爸</span>
+          </div>
+          <div class="filmstrip-group">
+            <div class="filmstrip-item"><img src="assets/images/好朋友.jpg" alt="好朋友"></div>
+            <span class="filmstrip-label">好朋友</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="holo-prompt">
+        <div class="prompt-label">【发言提示】</div>
+        <p class="prompt-text">
+          除了书里的角色，你还可以邀请一个身边的人来你的星球。<br>
+          想想看，你最想邀请谁？点击麦克风告诉我吧！
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 2: 星球相处说明书 -->
+    <div class="s4-step" id="s4-step-2" style="display:none;">
+      <div class="s4-question-card">
+        <div class="s4-card-icon">📖</div>
+        <h3 class="s4-card-title">星球相处说明书</h3>
+        <p class="s4-card-text">
+          如果ta来到了你的星球，你会怎样和ta相处呢？<br>
+          想一个让你们的星球充满快乐的相处秘诀吧！
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 3: 封面语总结 -->
+    <div class="s4-step" id="s4-step-3" style="display:none;">
+      <div class="s4-question-card">
+        <div class="s4-card-icon">✨</div>
+        <h3 class="s4-card-title">相处说明书 · 封面语</h3>
+        <p class="s4-card-text">
+          用一句话总结：你领悟到的人与人之间相处的真谛是什么？
+        </p>
+      </div>
+      <div class="s4-quotes-panel">
+        <p class="s4-quotes-hint">也许这些话能给你一些灵感：</p>
+        <div class="s4-quote-item">"真正重要的东西，用眼睛是看不见的。"<span class="s4-quote-author">—— 《小王子》</span></div>
+        <div class="s4-quote-item">"如果你驯服了我，我们就彼此需要了。"<span class="s4-quote-author">—— 狐狸</span></div>
+        <div class="s4-quote-item">"爱不是相互凝视，而是一起注视同一个方向。"<span class="s4-quote-author">—— 圣埃克苏佩里</span></div>
+      </div>
+    </div>
+
+    <!-- 共享麦克风 -->
+    <div class="s4-mic-wrap" id="s4MicWrap">
+      <div class="mic-ripple"></div>
+      <div class="mic-ripple"></div>
+      <div class="mic-ripple"></div>
+      <img class="mic-icon" src="assets/images/ui/mic.png" alt="麦克风">
+      <div class="mic-shadow"></div>
+      <div class="mic-hint">点击发言</div>
+    </div>
+
+    <!-- 飞行员对话框（与环节三同款） -->
+    <div class="assistant-bar s4-assistant-bar" id="s4-assistant-bar" style="display:none;">
+      <div class="assistant-avatar">
+        <img src="assets/images/characters/pilot-avatar.png" alt="助手飞行员">
+      </div>
+      <div class="assistant-content">
+        <div class="assistant-message" id="s4-assistant-message"></div>
+      </div>
+    </div>
+
+    <!-- 完成 → 视频等待 -->
+    <button id="btn-to-panorama" class="btn-primary btn-glow" style="display:none;">
+      查看我的星球纪录片！
+    </button>
+
+  </section>
+
+
+  <!-- ============================================================
+       环节五 · 视频等待页
+       - 纪录片生成等待状态
+       - JS: video-wait.js
+       ============================================================ -->
+  <section id="screen-5" class="screen">
+    <div class="screen-content s5-video-content">
+      <!-- 浮动粒子 -->
+      <div class="s5v-particles" id="s5v-particles"></div>
+
+      <!-- 星球视觉 -->
+      <div class="s5v-planet-visual">
+        <div class="s5v-planet-glow"></div>
+        <img id="s5v-planet-img" src="assets/images/planet/planet-base.png" alt="星球" class="s5v-planet-img">
+        <div class="s5v-orbit-ring s5v-orbit-1"></div>
+        <div class="s5v-orbit-ring s5v-orbit-2"></div>
+        <div class="s5v-orbit-ring s5v-orbit-3"></div>
+      </div>
+
+      <!-- 主文案 -->
+      <h2 class="s5v-title" id="s5v-title"></h2>
+      <p class="s5v-subtitle" id="s5v-subtitle"></p>
+
+      <!-- 装饰进度条 -->
+      <div class="s5v-progress-wrap">
+        <div class="s5v-progress-bar">
+          <div class="s5v-progress-glow"></div>
+        </div>
+        <p class="s5v-progress-hint">请耐心等待……</p>
+      </div>
+
+      <!-- 底部操作 -->
+      <div class="s5v-actions">
+        <button id="btn-restart" class="btn-secondary">重新开始</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       公共：转场遮罩 & 脚本加载
+       ============================================================ -->
+  <div id="transition-overlay" class="transition-overlay"></div>
+
+  <!-- JS 模块（按依赖顺序加载） -->
+  <script src="js/audio-manager.js"></script>
+  <script src="js/particles-config.js"></script>
+  <script src="js/recorder.js"></script>
+  <script src="js/planet-diy.js"></script>      <!-- 环节一 -->
+  <script src="js/recruitment.js"></script>      <!-- 环节二 -->
+  <script src="js/characters.js"></script>       <!-- 环节三(数据) -->
+  <script src="js/review.js"></script>           <!-- 环节三 -->
+  <script src="js/invite.js"></script>           <!-- 环节四 -->
+  <script src="js/video-wait.js"></script>       <!-- 环节五 -->
+  <script src="js/app.js"></script>              <!-- 主控制器 -->
+</body>
+</html>
