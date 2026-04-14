@@ -8,6 +8,20 @@
   <!-- Fonts (本地化) -->
   <link rel="stylesheet" href="css/fonts.css">
 
+  <!-- 预加载关键字体 -->
+  <link rel="preload" href="assets/fonts/NotoSansSC-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/MaShanZheng-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- 预加载 Screen 1 星球图片 -->
+  <link rel="preload" href="assets/images/planet/planet-blue.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-pink.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-blue-cloud.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-blue-ring.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-blue-asteroid.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-pink-cloud.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-pink-ring.png" as="image">
+  <link rel="preload" href="assets/images/planet/planet-pink-asteroid.png" as="image">
+
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/screens.css">
@@ -347,5 +361,29 @@
   <script src="js/invite.js"></script>           <!-- 环节四 -->
   <script src="js/video-wait.js"></script>       <!-- 环节五 -->
   <script src="js/app.js"></script>              <!-- 主控制器 -->
+
+  <!-- 后台预加载：用户看 Screen 1 时就把后续环节图片全下好 -->
+  <script>
+  (function() {
+    var urls = [
+      'assets/images/bg/console-bg.jpg',
+      'assets/images/characters/rose-desk.png',
+      'assets/images/characters/king.png',
+      'assets/images/characters/vain.png',
+      'assets/images/characters/merchant.png',
+      'assets/images/characters/pilot-avatar.png',
+      'assets/images/mic.png',
+      'assets/images/小猫.jpg',
+      'assets/images/妈妈.jpg',
+      'assets/images/爸爸.jpg',
+      'assets/images/好朋友.jpg'
+    ];
+    function preload() {
+      urls.forEach(function(u) { var img = new Image(); img.src = u; });
+    }
+    if (document.readyState === 'complete') preload();
+    else window.addEventListener('load', preload);
+  })();
+  </script>
 </body>
 </html>

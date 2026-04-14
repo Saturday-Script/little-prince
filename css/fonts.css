@@ -11,14 +11,14 @@
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url(../assets/fonts/NotoSansSC-Light.woff2) format('woff2');
+  src: url(../assets/fonts/NotoSansSC-Medium.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Noto Sans SC';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(../assets/fonts/NotoSansSC-Regular.woff2) format('woff2');
+  src: url(../assets/fonts/NotoSansSC-Medium.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Noto Sans SC';
