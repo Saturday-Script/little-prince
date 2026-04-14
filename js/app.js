@@ -87,15 +87,18 @@ const App = {
     let remaining = seconds;
 
     numEl.textContent = remaining;
+    AudioManager.play('click');
 
     const tick = () => {
       remaining--;
       if (remaining <= 0) {
+        AudioManager.play('create');
         onComplete();
         return;
       }
-      // 更新数字 + pop 动画
+      // 更新数字 + pop 动画 + 音效
       numEl.textContent = remaining;
+      AudioManager.play('click');
       numEl.classList.remove('pop');
       void numEl.offsetWidth;
       numEl.classList.add('pop');
