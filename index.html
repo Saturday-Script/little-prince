@@ -12,28 +12,29 @@
   <link rel="preload" href="assets/fonts/NotoSansSC-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/MaShanZheng-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
-  <!-- 预加载 Screen 1 星球图片 -->
-  <link rel="preload" href="assets/images/planet/planet-blue.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-pink.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-blue-cloud.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-blue-ring.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-blue-asteroid.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-pink-cloud.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-pink-ring.png" as="image">
-  <link rel="preload" href="assets/images/planet/planet-pink-asteroid.png" as="image">
+  <!-- 预取 Screen 1 星球图片（低优先级缓存） -->
+  <link rel="prefetch" href="assets/images/planet/planet-blue.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-pink.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-blue-cloud.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-blue-ring.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-blue-asteroid.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-pink-cloud.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-pink-ring.webp" as="image">
+  <link rel="prefetch" href="assets/images/planet/planet-pink-asteroid.webp" as="image">
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/screens.css">
   <link rel="stylesheet" href="css/animations.css">
 
-  <!-- Libraries (本地化) -->
+  <!-- Libraries (本地化) — 首屏必需同步加载 -->
   <script src="lib/anime.min.js"></script>
   <script src="lib/howler.min.js"></script>
-  <script src="lib/wavesurfer.min.js"></script>
-  <script src="lib/tsparticles.engine.min.js"></script>
-  <script src="lib/tsparticles.bundle.min.js"></script>
-  <script src="lib/typed.umd.js"></script>
+  <!-- 非首屏库延迟加载 -->
+  <script src="lib/wavesurfer.min.js" defer></script>
+  <script src="lib/tsparticles.engine.min.js" defer></script>
+  <script src="lib/tsparticles.bundle.min.js" defer></script>
+  <script src="lib/typed.umd.js" defer></script>
 </head>
 <body>
 
@@ -67,7 +68,15 @@
   <!-- 开始体验覆盖层（解锁音频） -->
   <div class="start-overlay" id="start-overlay">
     <div class="start-content">
-      <div class="start-hint">点击任意位置，开始你的星际旅程</div>
+      <div class="start-hint" id="start-hint">点击任意位置，开始你的星际旅程</div>
+      <div class="countdown-container" id="countdown-container" style="display:none;">
+        <div class="countdown-number" id="countdown-number">5</div>
+        <svg class="countdown-ring" viewBox="0 0 120 120">
+          <circle class="countdown-ring-bg" cx="60" cy="60" r="54"/>
+          <circle class="countdown-ring-progress" id="countdown-ring-progress" cx="60" cy="60" r="54"/>
+        </svg>
+        <div class="countdown-text">星际引擎启动中…</div>
+      </div>
     </div>
   </div>
 
@@ -83,7 +92,7 @@
 
       <div class="planet-stage">
         <div class="planet-container">
-          <img id="planet-img" src="assets/images/planet/planet-base.png" alt="星球" class="planet-main">
+          <img id="planet-img" src="assets/images/planet/planet-base.webp" alt="星球" class="planet-main">
         </div>
       </div>
 
@@ -128,7 +137,7 @@
       <div class="s2-hero-planet" id="s2-hero-planet">
         <div class="s2-signal-rings" id="s2-signal-rings"></div>
         <span class="s2-hero-planet-name" id="s2-hero-planet-name"></span>
-        <img src="assets/images/planet/planet-base.png" alt="我的星球" class="s2-hero-planet-img" id="s2-hero-planet-img">
+        <img src="assets/images/planet/planet-base.webp" alt="我的星球" class="s2-hero-planet-img" id="s2-hero-planet-img">
       </div>
 
       <!-- 串场旁白字幕 -->
@@ -167,7 +176,7 @@
         <span class="s3-rec-ripple"></span>
         <span class="s3-rec-ripple"></span>
         <!-- 麦克风图片（与环节四同款） -->
-        <img class="s3-mic-img" src="assets/images/ui/mic.png" alt="麦克风">
+        <img class="s3-mic-img" src="assets/images/ui/mic.webp" alt="麦克风">
         <!-- 录音中的波形动画 -->
         <div class="s3-rec-waves">
           <span class="s3-wave-bar"></span>
@@ -183,7 +192,7 @@
     <!-- 助手飞行员对话框（底部） -->
     <div class="assistant-bar" id="assistant-bar">
       <div class="assistant-avatar">
-        <img src="assets/images/characters/pilot-avatar.png" alt="助手飞行员">
+        <img src="assets/images/characters/pilot-avatar.webp" alt="助手飞行员">
       </div>
       <div class="assistant-content">
         <div class="assistant-message" id="assistant-message"></div>
@@ -213,28 +222,28 @@
       <div class="window-filmstrip">
         <div class="filmstrip-track">
           <div class="filmstrip-group">
-            <div class="filmstrip-item"><img src="assets/images/妈妈.jpg" alt="妈妈"></div>
+            <div class="filmstrip-item"><img src="assets/images/妈妈.webp" alt="妈妈"></div>
             <span class="filmstrip-label">妈妈</span>
           </div>
           <div class="filmstrip-group">
-            <div class="filmstrip-item"><img src="assets/images/爸爸.jpg" alt="爸爸"></div>
+            <div class="filmstrip-item"><img src="assets/images/爸爸.webp" alt="爸爸"></div>
             <span class="filmstrip-label">爸爸</span>
           </div>
           <div class="filmstrip-group">
-            <div class="filmstrip-item"><img src="assets/images/好朋友.jpg" alt="好朋友"></div>
+            <div class="filmstrip-item"><img src="assets/images/好朋友.webp" alt="好朋友"></div>
             <span class="filmstrip-label">好朋友</span>
           </div>
           <!-- 第二组（无缝循环） -->
           <div class="filmstrip-group">
-            <div class="filmstrip-item"><img src="assets/images/妈妈.jpg" alt="妈妈"></div>
+            <div class="filmstrip-item"><img src="assets/images/妈妈.webp" alt="妈妈"></div>
             <span class="filmstrip-label">妈妈</span>
           </div>
           <div class="filmstrip-group">
-            <div class="filmstrip-item"><img src="assets/images/爸爸.jpg" alt="爸爸"></div>
+            <div class="filmstrip-item"><img src="assets/images/爸爸.webp" alt="爸爸"></div>
             <span class="filmstrip-label">爸爸</span>
           </div>
           <div class="filmstrip-group">
-            <div class="filmstrip-item"><img src="assets/images/好朋友.jpg" alt="好朋友"></div>
+            <div class="filmstrip-item"><img src="assets/images/好朋友.webp" alt="好朋友"></div>
             <span class="filmstrip-label">好朋友</span>
           </div>
         </div>
@@ -283,7 +292,7 @@
       <div class="mic-ripple"></div>
       <div class="mic-ripple"></div>
       <div class="mic-ripple"></div>
-      <img class="mic-icon" src="assets/images/ui/mic.png" alt="麦克风">
+      <img class="mic-icon" src="assets/images/ui/mic.webp" alt="麦克风">
       <div class="mic-shadow"></div>
       <div class="mic-hint">点击发言</div>
     </div>
@@ -291,7 +300,7 @@
     <!-- 飞行员对话框（与环节三同款） -->
     <div class="assistant-bar s4-assistant-bar" id="s4-assistant-bar" style="display:none;">
       <div class="assistant-avatar">
-        <img src="assets/images/characters/pilot-avatar.png" alt="助手飞行员">
+        <img src="assets/images/characters/pilot-avatar.webp" alt="助手飞行员">
       </div>
       <div class="assistant-content">
         <div class="assistant-message" id="s4-assistant-message"></div>
@@ -319,7 +328,7 @@
       <!-- 星球视觉 -->
       <div class="s5v-planet-visual">
         <div class="s5v-planet-glow"></div>
-        <img id="s5v-planet-img" src="assets/images/planet/planet-base.png" alt="星球" class="s5v-planet-img">
+        <img id="s5v-planet-img" src="assets/images/planet/planet-base.webp" alt="星球" class="s5v-planet-img">
         <div class="s5v-orbit-ring s5v-orbit-1"></div>
         <div class="s5v-orbit-ring s5v-orbit-2"></div>
         <div class="s5v-orbit-ring s5v-orbit-3"></div>
@@ -366,17 +375,17 @@
   <script>
   (function() {
     var urls = [
-      'assets/images/bg/console-bg.jpg',
-      'assets/images/characters/rose-desk.png',
-      'assets/images/characters/king.png',
-      'assets/images/characters/vain.png',
-      'assets/images/characters/merchant.png',
-      'assets/images/characters/pilot-avatar.png',
-      'assets/images/mic.png',
-      'assets/images/小猫.jpg',
-      'assets/images/妈妈.jpg',
-      'assets/images/爸爸.jpg',
-      'assets/images/好朋友.jpg'
+      'assets/images/bg/console-bg.webp',
+      'assets/images/characters/rose-desk.webp',
+      'assets/images/characters/king.webp',
+      'assets/images/characters/vain.webp',
+      'assets/images/characters/merchant.webp',
+      'assets/images/characters/pilot-avatar.webp',
+      'assets/images/ui/mic.webp',
+      'assets/images/小猫.webp',
+      'assets/images/妈妈.webp',
+      'assets/images/爸爸.webp',
+      'assets/images/好朋友.webp'
     ];
     function preload() {
       urls.forEach(function(u) { var img = new Image(); img.src = u; });

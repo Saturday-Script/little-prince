@@ -11,16 +11,16 @@ const PlanetDIY = {
   // 图片映射表：color → { base, cloud, ring, asteroid }
   planetImages: {
     blue: {
-      base: 'assets/images/planet/planet-blue.png',
-      cloud: 'assets/images/planet/planet-blue-cloud.png',
-      ring: 'assets/images/planet/planet-blue-ring.png',
-      asteroid: 'assets/images/planet/planet-blue-asteroid.png'
+      base: 'assets/images/planet/planet-blue.webp',
+      cloud: 'assets/images/planet/planet-blue-cloud.webp',
+      ring: 'assets/images/planet/planet-blue-ring.webp',
+      asteroid: 'assets/images/planet/planet-blue-asteroid.webp'
     },
     pink: {
-      base: 'assets/images/planet/planet-pink.png',
-      cloud: 'assets/images/planet/planet-pink-cloud.png',
-      ring: 'assets/images/planet/planet-pink-ring.png',
-      asteroid: 'assets/images/planet/planet-pink-asteroid.png'
+      base: 'assets/images/planet/planet-pink.webp',
+      cloud: 'assets/images/planet/planet-pink-cloud.webp',
+      ring: 'assets/images/planet/planet-pink-ring.webp',
+      asteroid: 'assets/images/planet/planet-pink-asteroid.webp'
     }
   },
 
@@ -33,7 +33,7 @@ const PlanetDIY = {
   },
 
   _getCurrentImageSrc() {
-    if (!this.planetColor) return 'assets/images/planet/planet-base.png';
+    if (!this.planetColor) return 'assets/images/planet/planet-base.webp';
     const map = this.planetImages[this.planetColor];
     return this.planetDeco ? (map[this.planetDeco] || map.base) : map.base;
   },

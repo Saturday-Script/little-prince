@@ -31,18 +31,36 @@ const App = {
 
     // BGM 已禁用
 
-    // 等待用户点击开始覆盖层，解锁音频后播放开场旁白 + 入场动画
+    // 等待用户点击开始覆盖层，解锁音频后播放倒计时 → 开场旁白 + 入场动画
     this.introNarratorDone = false;
     const startOverlay = document.getElementById('start-overlay');
     startOverlay.addEventListener('click', () => {
-      // 淡出覆盖层
-      startOverlay.classList.add('hidden');
-      // 立即播放开场旁白（此时在用户点击回调内，不会被拦截）
-      AudioManager.playNarrator('narratorIntro', () => {
-        this.introNarratorDone = true;
+      // 1. 在用户点击回调内解锁 Howler AudioContext
+      Howler.ctx && Howler.ctx.resume();
+      // 播一个极短的静音音效确保 AudioContext 被解锁
+      AudioManager.play('click');
+
+      // 2. 强制预加载第一段旁白（load() 确保 html5 模式下开始缓冲）
+      if (AudioManager.sounds.narratorIntro) {
+        AudioManager.sounds.narratorIntro.load();
+      }
+
+      // 3. 隐藏提示文字，显示倒计时
+      document.getElementById('start-hint').style.display = 'none';
+      const countdownContainer = document.getElementById('countdown-container');
+      countdownContainer.style.display = 'block';
+
+      // 4. 启动倒计时
+      this._startCountdown(5, () => {
+        // 倒计时结束 → 淡出覆盖层
+        startOverlay.classList.add('hidden');
+        // 播放开场旁白
+        AudioManager.playNarrator('narratorIntro', () => {
+          this.introNarratorDone = true;
+        });
+        // 启动入场动画
+        this._playIntro();
       });
-      // 启动入场动画
-      this._playIntro();
     }, { once: true });
   },
 
@@ -60,6 +78,42 @@ const App = {
       s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;animation-delay:${Math.random()*5}s;`;
       sc.appendChild(s);
     }
+  },
+
+  _startCountdown(seconds, onComplete) {
+    const numEl = document.getElementById('countdown-number');
+    const ringEl = document.getElementById('countdown-ring-progress');
+    const circumference = 2 * Math.PI * 54; // r=54
+    let remaining = seconds;
+
+    numEl.textContent = remaining;
+
+    const tick = () => {
+      remaining--;
+      if (remaining <= 0) {
+        onComplete();
+        return;
+      }
+      // 更新数字 + pop 动画
+      numEl.textContent = remaining;
+      numEl.classList.remove('pop');
+      void numEl.offsetWidth;
+      numEl.classList.add('pop');
+      // 更新环形进度（从满到空）
+      const progress = remaining / seconds;
+      ringEl.style.strokeDashoffset = circumference * (1 - progress);
+    };
+
+    // 初始 pop
+    numEl.classList.add('pop');
+    // 初始环形（满圆）
+    ringEl.style.strokeDashoffset = 0;
+
+    // 每秒倒数
+    const timer = setInterval(() => {
+      tick();
+      if (remaining <= 0) clearInterval(timer);
+    }, 1000);
   },
 
   _playIntro() {

@@ -12,187 +12,186 @@ const AudioManager = {
     // BGM - 宇宙空灵背景音乐
     this.bgm = new Howl({
       src: ['assets/audio/bgm/space-ambient.mp3'],
-      html5: true,
       loop: true,
       volume: 0.3,
-      preload: true
+      preload: false
     });
 
     // 操作音效
     this.sounds.click = new Howl({
       src: ['assets/audio/sfx/click.mp3'],
-      html5: true, volume: 0.5
+      volume: 0.5
     });
 
     this.sounds.type = new Howl({
       src: ['assets/audio/sfx/type.mp3'],
-      html5: true, volume: 0.3
+      volume: 0.3
     });
 
     this.sounds.create = new Howl({
       src: ['assets/audio/sfx/create.mp3'],
-      html5: true, volume: 0.6
+      volume: 0.6
     });
 
     this.sounds.scrollOpen = new Howl({
       src: ['assets/audio/sfx/scroll-open.mp3'],
-      html5: true, volume: 0.5
+      volume: 0.5
     });
 
     this.sounds.publish = new Howl({
       src: ['assets/audio/sfx/publish.mp3'],
-      html5: true, volume: 0.6
+      volume: 0.6
     });
 
     this.sounds.whoosh = new Howl({
       src: ['assets/audio/sfx/whoosh.mp3'],
-      html5: true, volume: 0.4
+      volume: 0.4
     });
 
     this.sounds.pass = new Howl({
       src: ['assets/audio/sfx/pass.mp3'],
-      html5: true, volume: 0.5
+      volume: 0.5
     });
 
     this.sounds.reject = new Howl({
       src: ['assets/audio/sfx/reject.mp3'],
-      html5: true, volume: 0.4
+      volume: 0.4
     });
 
     this.sounds.recordStart = new Howl({
       src: ['assets/audio/sfx/record-start.mp3'],
-      html5: true, volume: 0.5
+      volume: 0.5
     });
 
     this.sounds.recordEnd = new Howl({
       src: ['assets/audio/sfx/record-end.mp3'],
-      html5: true, volume: 0.5
+      volume: 0.5
     });
 
     this.sounds.welcome = new Howl({
       src: ['assets/audio/sfx/welcome.mp3'],
-      html5: true, volume: 0.5
+      volume: 0.5
     });
 
     this.sounds.finale = new Howl({
       src: ['assets/audio/sfx/finale.mp3'],
-      html5: true, volume: 0.6
+      volume: 0.6
     });
 
     this.sounds.deco = new Howl({
       src: ['assets/audio/sfx/deco.mp3'],
-      html5: true, volume: 0.4
+      volume: 0.4
     });
 
-    // 飞行员旁白语音
+    // 飞行员旁白语音 — Screen 1 立即加载，其余延迟
     this.sounds.narratorIntro = new Howl({
       src: ['assets/audio/narrator/s1-intro.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8
     });
     this.sounds.narratorNaming = new Howl({
       src: ['assets/audio/narrator/s1-naming.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8
     });
     this.sounds.narratorDecorate = new Howl({
       src: ['assets/audio/narrator/s1-decorate.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8
     });
     this.sounds.narratorRecruitment = new Howl({
       src: ['assets/audio/narrator/s2-recruitment.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorScrollContent = new Howl({
       src: ['assets/audio/narrator/s2-scroll-content.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS3Welcome = new Howl({
       src: ['assets/audio/narrator/s3-welcome.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorRoseSignal = new Howl({
       src: ['assets/audio/narrator/s3-rose-signal.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorKingSignal = new Howl({
       src: ['assets/audio/narrator/s3-king-signal.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorVainSignal = new Howl({
       src: ['assets/audio/narrator/s3-vain-signal.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorMerchantSignal = new Howl({
       src: ['assets/audio/narrator/s3-merchant-signal.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorStampPrompt = new Howl({
       src: ['assets/audio/narrator/s3-stamp-prompt.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorRecordPrompt = new Howl({
       src: ['assets/audio/narrator/s3-record-prompt.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorPassReaction = new Howl({
       src: ['assets/audio/narrator/s3-pass-reaction.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorRejectReaction = new Howl({
       src: ['assets/audio/narrator/s3-reject-reaction.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS3SelectPrompt = new Howl({
       src: ['assets/audio/narrator/s3-select-prompt.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS4Transition = new Howl({
       src: ['assets/audio/narrator/s4-transition.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorMicPrompt = new Howl({
       src: ['assets/audio/narrator/s4-mic-prompt.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS4Step1 = new Howl({
       src: ['assets/audio/narrator/s4-step1.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS4Step2 = new Howl({
       src: ['assets/audio/narrator/s4-step2.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS4Step3 = new Howl({
       src: ['assets/audio/narrator/s4-step3.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS4Finish = new Howl({
       src: ['assets/audio/narrator/s4-finish.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
     this.sounds.narratorS5Narration = new Howl({
       src: ['assets/audio/narrator/s5-narration.mp3'],
-      html5: true, volume: 0.8
+      volume: 0.8, preload: false
     });
 
     // 角色配音
     this.sounds.voiceRose = new Howl({
       src: ['assets/audio/voice/rose.mp3'],
-      html5: true, volume: 0.7
+      volume: 0.7, preload: false
     });
 
     this.sounds.voiceKing = new Howl({
       src: ['assets/audio/voice/king.mp3'],
-      html5: true, volume: 0.7
+      volume: 0.7, preload: false
     });
 
     this.sounds.voiceVain = new Howl({
       src: ['assets/audio/voice/vain.mp3'],
-      html5: true, volume: 0.7
+      volume: 0.7, preload: false
     });
 
     this.sounds.voiceMerchant = new Howl({
       src: ['assets/audio/voice/merchant.mp3'],
-      html5: true, volume: 0.7
+      volume: 0.7, preload: false
     });
 
     // 绑定静音按钮
@@ -226,7 +225,14 @@ const AudioManager = {
 
   play(name) {
     try {
-      if (this.sounds[name]) this.sounds[name].play();
+      const sound = this.sounds[name];
+      if (!sound) return;
+      if (sound.state() === 'unloaded') {
+        sound.once('load', () => sound.play());
+        sound.load();
+        return;
+      }
+      sound.play();
     } catch (e) { /* 音频未加载，静默跳过 */ }
   },
 
@@ -236,7 +242,7 @@ const AudioManager = {
     }
   },
 
-  // 播放角色配音
+  // 播放角色配音（自动处理延迟加载）
   playVoice(characterId) {
     const voiceMap = {
       rose: 'voiceRose',
@@ -246,20 +252,35 @@ const AudioManager = {
     };
     const soundKey = voiceMap[characterId];
     try {
-      if (soundKey && this.sounds[soundKey]) return this.sounds[soundKey].play();
+      const sound = this.sounds[soundKey];
+      if (!sound) return;
+      if (sound.state() === 'unloaded') {
+        sound.once('load', () => sound.play());
+        sound.load();
+        return;
+      }
+      return sound.play();
     } catch (e) { /* 静默跳过 */ }
   },
 
   // 播放旁白语音，返回 Howl sound id；支持 onEnd 回调
+  // 自动处理 preload:false 的延迟加载
   playNarrator(name, onEnd) {
     try {
-      if (this.sounds[name]) {
-        const id = this.sounds[name].play();
-        if (onEnd) {
-          this.sounds[name].once('end', onEnd, id);
-        }
-        return id;
+      const sound = this.sounds[name];
+      if (!sound) return;
+      // 如果尚未加载，先 load 再在 load 事件里 play
+      if (sound.state() === 'unloaded') {
+        sound.once('load', () => {
+          const id = sound.play();
+          if (onEnd) sound.once('end', onEnd, id);
+        });
+        sound.load();
+        return;
       }
+      const id = sound.play();
+      if (onEnd) sound.once('end', onEnd, id);
+      return id;
     } catch (e) { /* 静默跳过 */ }
   },
 
