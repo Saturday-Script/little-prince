@@ -257,7 +257,7 @@ const Review = {
         // 禁用再次点击
         btn.style.pointerEvents = 'none';
 
-        this._showAssistantMessage('你的星球还有空位呢！想想你的身边，还有谁值得一张宇宙船票？');
+        this._showAssistantMessage('你的想法很独特！现在，你的星球还有空位呢！想想你身边，还有谁值得一张宇宙船票呢？');
 
         AudioManager.playNarrator('narratorS4Transition', () => {
           setTimeout(() => App.goToScreen(4), 500);
