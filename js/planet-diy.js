@@ -98,10 +98,13 @@ const PlanetDIY = {
         this._updatePlanetImage();
         AudioManager.play('click');
 
-        // 首次选色时播放"装扮星球"旁白
+        // 首次选色时播放"装扮星球"旁白（提前到选色时）
         if (!this._decorateNarratorPlayed) {
           this._decorateNarratorPlayed = true;
-          AudioManager.playNarrator('narratorDecorate');
+          // 等待选色动画和音效播放完再播旁白，避免与起名旁白冲突
+          setTimeout(() => {
+            AudioManager.playNarrator('narratorDecorate');
+          }, 300);
         }
       });
     });
@@ -113,6 +116,11 @@ const PlanetDIY = {
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const deco = btn.dataset.deco;
+
+        // 如果"装扮星球"旁白正在播放，打断它
+        if (this._decorateNarratorPlayed) {
+          AudioManager.stopNarrator('narratorDecorate');
+        }
 
         // 单选切换：再次点击取消选择
         if (this.planetDeco === deco) {

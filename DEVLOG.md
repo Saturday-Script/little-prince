@@ -379,11 +379,110 @@
 
 ---
 
+## 2026-04-15
+
+### 线上部署 & 极致性能优化（96MB → 3.4MB）
+
+项目已部署至 GitHub Pages：**https://saturday-script.github.io/little-prince/**
+
+部署仓库：`Saturday-Script/little-prince`，`main` 分支通过 GitHub Actions 自动构建部署。
+
+#### 第一轮压缩（96MB → 30MB）
+- TTF 字体转 WOFF2：48MB → 20MB
+- 大图 PNG 有损压缩：36MB → 5MB
+- BGM 降码率：4MB → 2MB
+
+#### 第二轮压缩（30MB → 21MB）
+- 删除未使用的字体字重：NotoSansSC-Light / Regular 未被引用，删除后字体 20MB → 12MB
+- `console-bg.png`（468KB）转 JPG 压缩
+- `vain.png`（952KB）压缩
+- `index.html` 添加 `<link rel="preload">` 预加载 8 张星球图片 + 2 个关键字体
+- 页面底部添加后台预加载脚本，用户看 Screen 1 时后台下载角色图 / 背景图
+
+#### 第三轮极致压缩（21MB → 3.4MB）
+
+**字体子集化（12MB → 339KB，缩小 97%）**
+- 用 `pyftsubset`（fonttools）扫描 `index.html` + `js/*.js` + `css/*.css` 中所有可见字符，共 498 个唯一字符
+- 4 个字体（NotoSansSC-Medium/Bold、MaShanZheng、ZCOOLKuaiLe）全部子集化为仅包含这 498 个字符的 WOFF2
+- 单个字体从 3-4MB 降到 44-170KB
+
+**图片全转 WebP（3.7MB → 469KB，缩小 87%）**
+- 所有 PNG/JPG 通过 `cwebp` 转为 WebP 格式
+- 星球图片：150KB/张 → 6-15KB/张
+- 角色图片：250-377KB/张 → 22-30KB/张
+- 背景图：119KB → 55KB
+- 更新全部引用（`index.html`、`js/planet-diy.js`、`js/characters.js`、`css/screens.css`、`tuner.html`），删除旧 PNG/JPG 文件
+
+**音频降码率（4.7MB → 2.3MB，缩小 52%）**
+- BGM：128kbps stereo → 48kbps mono（1.4MB → 1.1MB）
+- 旁白语音：全部降至 48kbps mono（语音质量足够）
+- 角色配音：同上
+- SFX 音效：降至 32kbps mono
+
+**JS 库延迟加载**
+- tsparticles（243KB）、wavesurfer（39KB）、typed.js（10KB）加 `defer` 属性，不阻塞首屏渲染
+- 仅 anime.js（17KB）和 howler.js（35KB）同步加载（首屏必需）
+
+**图片预加载策略调整**
+- `<link rel="preload">` 改为 `<link rel="prefetch">`（低优先级），消除浏览器 "preloaded but not used" 警告
+
+#### 最终部署资源清单
+
+| 类别 | 大小 |
+|------|------|
+| 字体（4个 WOFF2 子集） | 339KB |
+| 图片（22个 WebP） | 469KB |
+| 音频（45个 MP3） | 2,287KB |
+| JS 库（6个） | 344KB |
+| JS 代码（11个模块） | 70KB |
+| CSS（4个） | 72KB |
+| **部署总计** | **3.4MB** |
+
+**首屏关键路径**：字体 232KB + CSS 72KB + JS 52KB + HTML 15KB + 首屏图 10KB = **~381KB**（GitHub Pages gzip 后约 150KB）
+
+### 音频播放修复 — HTML5 Audio Pool 耗尽问题
+
+- **症状**：点击进入后第一段旁白播不出来，控制台大量 "HTML5 Audio pool exhausted" 警告
+- **根因**：`audio-manager.js` 中所有 30+ 个 Howl 实例都设置了 `html5: true`，每个实例立即分配一个 HTML5 `<audio>` 元素，超过浏览器并发限制（~16个），导致后续音频无法获取 audio 对象
+- **修复**：
+  - 去掉所有 `html5: true`，改用 Howler 默认的 Web Audio API 模式（通过 AudioContext 解码，不受 `<audio>` 元素数量限制）
+  - Screen 2+ 的旁白和角色配音加 `preload: false`，按需加载减少初始化开销
+  - `playNarrator()` / `playVoice()` / `play()` 方法增加延迟加载处理：检测 `sound.state() === 'unloaded'` 时先 `load()` 再在 `load` 事件回调中 `play()`
+- 涉及文件：`js/audio-manager.js`
+
+### 倒计时启动动画 — 解决音频预加载时序
+
+- **需求**：用户点击"开始星际旅程"后，给音频系统足够的缓冲时间
+- **方案**：点击后显示 5 秒倒计时动画（"星际引擎启动中…"），期间完成音频准备
+- **实现**：
+  - HTML：倒计时容器（数字 + SVG 环形进度条 + 提示文字）
+  - CSS：环形进度条（stroke-dasharray/dashoffset 动画）、数字弹跳动画（`countdownPop`）
+  - JS `_startCountdown()`：每秒更新数字、环形进度（从满到空）、播放 click 音效；归零时播放 create 音效并触发回调
+  - 点击回调内立即执行：`Howler.ctx.resume()` 解锁 AudioContext → `AudioManager.sounds.narratorIntro.load()` 预加载首段旁白
+  - 倒计时结束后：淡出覆盖层 → 播放开场旁白 → 启动入场动画
+- 覆盖层背景改为完全不透明（`rgba` → 纯色），避免穿透看到未加载完的 Screen 1
+- 涉及文件：`index.html`、`css/style.css`、`js/app.js`
+
+### Git 提交记录
+
+| 提交 | 说明 |
+|------|------|
+| `1fb01a8` | 压缩静态资源：96MB → 30MB |
+| `da29f95` | 进一步优化加载速度：96MB → 21MB |
+| `e2bd395` | 极致压缩：96MB → 3.4MB，首屏关键路径仅381KB |
+| `6c2d673` | 倒计时添加音效：每秒 tick 播 click，归零播 create |
+
+---
+
 ## 待办 / 已知问题
-- [ ] 用户替换皮克斯风格PNG素材后更新图片引用
+- [ ] 用户替换皮克斯风格PNG素材后更新图片引用（注意：现在图片格式为 WebP）
 - [x] ~~音效文件尚未就位（assets/audio/ 目录为空）~~ → 已用 ffmpeg 合成生成，后续可替换为精美音效
 - [ ] 角色配音文件待制作（当前为静音占位）
 - [ ] 移动端响应式适配尚未测试
 - [ ] Screen 5 Three.js 全景合影需真实素材测试性能
 - [ ] 背景图右下角有"豆包AI生成"水印，正式版需去除
 - [ ] Screen 3-5 完整交互流程待补充自动化测试（见 TESTCASE.md）
+- [x] ~~线上部署~~ → GitHub Pages 已部署，CI/CD 自动化
+- [x] ~~页面加载慢~~ → 96MB → 3.4MB（字体子集化 + WebP + 音频压缩 + 延迟加载）
+- [x] ~~音频播不出来~~ → 去掉 html5:true 解决 Audio Pool 耗尽 + 倒计时预加载
+- [ ] 新增文字内容时需重新运行字体子集化（否则新字符显示为 fallback 字体）

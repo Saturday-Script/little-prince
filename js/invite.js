@@ -226,24 +226,66 @@ const Invite = {
     this._micEnabled = false;
 
     if (this._currentStep < 3) {
-      // 过渡到下一步
-      const currentStepEl = document.getElementById(`s4-step-${this._currentStep}`);
-      anime({
-        targets: currentStepEl,
-        opacity: [1, 0],
-        duration: 400,
-        easing: 'easeInQuad',
-        complete: () => {
-          currentStepEl.classList.remove('active');
-          currentStepEl.style.removeProperty('display');
-          currentStepEl.style.removeProperty('opacity');
-          currentStepEl.style.removeProperty('transform');
-          this._enterStep(this._currentStep + 1);
-        }
-      });
+      // Step 1 结束后播放通用反馈
+      if (this._currentStep === 1) {
+        this._showStep1Feedback(() => {
+          // 反馈结束后过渡到下一步
+          const currentStepEl = document.getElementById(`s4-step-${this._currentStep}`);
+          anime({
+            targets: currentStepEl,
+            opacity: [1, 0],
+            duration: 400,
+            easing: 'easeInQuad',
+            complete: () => {
+              currentStepEl.classList.remove('active');
+              currentStepEl.style.removeProperty('display');
+              currentStepEl.style.removeProperty('opacity');
+              currentStepEl.style.removeProperty('transform');
+              this._enterStep(this._currentStep + 1);
+            }
+          });
+        });
+      } else {
+        // 其他步骤直接过渡
+        const currentStepEl = document.getElementById(`s4-step-${this._currentStep}`);
+        anime({
+          targets: currentStepEl,
+          opacity: [1, 0],
+          duration: 400,
+          easing: 'easeInQuad',
+          complete: () => {
+            currentStepEl.classList.remove('active');
+            currentStepEl.style.removeProperty('display');
+            currentStepEl.style.removeProperty('opacity');
+            currentStepEl.style.removeProperty('transform');
+            this._enterStep(this._currentStep + 1);
+          }
+        });
+      }
     } else {
       // 三步全部完成 → 飞行员收束语 → 显示完成按钮
       this._showFinishWithPilot();
+    }
+  },
+
+  _showStep1Feedback(onDone) {
+    const feedbackText = '你的想法很独特！现在，你的星球还有空位呢！想想你身边，还有谁值得一张宇宙船票呢？';
+
+    this._showAssistantDialog(feedbackText);
+
+    const hasAudio = AudioManager.sounds && AudioManager.sounds.narratorS4Transition;
+    const onAudioDone = () => {
+      setTimeout(() => {
+        this._hideAssistantDialog(() => {
+          if (onDone) onDone();
+        });
+      }, 600);
+    };
+
+    if (hasAudio) {
+      AudioManager.playNarrator('narratorS4Transition', onAudioDone);
+    } else {
+      setTimeout(onAudioDone, 2500);
     }
   },
 
