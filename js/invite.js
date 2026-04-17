@@ -160,8 +160,9 @@ const Invite = {
       const audioKey = pilotLine.audioKey;
       const hasAudio = AudioManager.sounds && AudioManager.sounds[audioKey];
 
-      if (pilotLine.text) {
-        // 有文字：弹对话框 → 播音频 → 对话框淡出 → 启用麦克风
+      // 修改4：Step 2 和 Step 3 不显示对话框，直接播音频+启用麦克风
+      if (pilotLine.text && step !== 2 && step !== 3) {
+        // 有文字且不是Step 2/3：弹对话框 → 播音频 → 对话框淡出 → 启用麦克风
         this._showAssistantDialog(pilotLine.text);
         const onAudioDone = () => {
           setTimeout(() => {
@@ -174,7 +175,7 @@ const Invite = {
           setTimeout(onAudioDone, 2500);
         }
       } else {
-        // 无文字（如 Step 1）：麦克风立即显示，音频同步播放
+        // 无文字 或 Step 2/3：麦克风立即显示，音频同步播放
         this._enableMic();
         if (hasAudio) {
           AudioManager.playNarrator(audioKey);

@@ -257,18 +257,73 @@ const Review = {
         // 禁用再次点击
         btn.style.pointerEvents = 'none';
 
-        this._showAssistantMessage('你的想法很独特！现在，你的星球还有空位呢！想想你身边，还有谁值得一张宇宙船票呢？');
-
-        AudioManager.playNarrator('narratorS4Transition', () => {
-          setTimeout(() => App.goToScreen(4), 500);
-        });
-
-        // 兜底
-        if (!AudioManager.sounds || !AudioManager.sounds['narratorS4Transition']) {
-          setTimeout(() => App.goToScreen(4), 2000);
-        }
+        // 修改3：显示轮播板子（角色背景介绍） → 播反馈 → 进环节四
+        this._showCarouselBanner();
       }
     });
+  },
+
+  // ============ 轮播板子（角色背景介绍） ============
+
+  _showCarouselBanner() {
+    // 淡出当前的选中卡片和录音按钮
+    const phase = document.getElementById('s3-selected-phase');
+    anime({
+      targets: phase,
+      opacity: [1, 0],
+      duration: 400,
+      easing: 'easeInQuad',
+      complete: () => {
+        phase.style.display = 'none';
+
+        // 展示轮播板子（全屏居中显示角色背景介绍）
+        const banner = document.createElement('div');
+        banner.className = 's3-carousel-banner';
+        banner.innerHTML = `
+          <div class="s3-carousel-content">
+            <h3 class="s3-carousel-title">${this.selectedCharacter.name}的故事</h3>
+            <p class="s3-carousel-text">${this.selectedCharacter.background || '角色背景介绍'}</p>
+          </div>
+        `;
+        document.getElementById('screen-3').appendChild(banner);
+
+        // 淡入动画
+        anime({
+          targets: banner,
+          opacity: [0, 1],
+          duration: 500,
+          easing: 'easeOutCubic'
+        });
+
+        // 10秒后淡出板子 → 播反馈 → 进环节四
+        setTimeout(() => {
+          anime({
+            targets: banner,
+            opacity: [1, 0],
+            duration: 400,
+            easing: 'easeInQuad',
+            complete: () => {
+              banner.remove();
+              // 播放反馈旁白
+              this._showTransitionFeedback();
+            }
+          });
+        }, 10000);
+      }
+    });
+  },
+
+  _showTransitionFeedback() {
+    this._showAssistantMessage('你的想法很独特！现在，你的星球还有空位呢！想想你身边，还有谁值得一张宇宙船票呢？');
+
+    AudioManager.playNarrator('narratorS4Transition', () => {
+      setTimeout(() => App.goToScreen(4), 500);
+    });
+
+    // 兜底
+    if (!AudioManager.sounds || !AudioManager.sounds['narratorS4Transition']) {
+      setTimeout(() => App.goToScreen(4), 2000);
+    }
   },
 
   // ============ 助手飞行员对话框 ============
